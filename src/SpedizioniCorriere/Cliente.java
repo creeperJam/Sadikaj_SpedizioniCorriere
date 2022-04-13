@@ -24,7 +24,6 @@ public class Cliente implements Serializable{
 		this.citta = citta;
 		this.telefono = telefono;
 	}
-
 	
 	public String getCodiceFiscale() {
 		return codiceFiscale;
