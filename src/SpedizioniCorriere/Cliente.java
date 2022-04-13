@@ -1,7 +1,13 @@
 package SpedizioniCorriere;
 
-public class Cliente {
+import java.io.Serializable;
 
+public class Cliente implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String codiceFiscale;
 	private String nome;
 	private String cognome;
