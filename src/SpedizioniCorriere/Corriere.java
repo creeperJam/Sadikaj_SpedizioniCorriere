@@ -22,7 +22,7 @@ public class Corriere {
 		spedizioni = new HashMap<>();
 	}
 
-	public Corriere(Map<Integer, Cliente> clienti, Map<String, Spedizione> spedizioni) {
+	public Corriere(TreeMap<Integer, Cliente> clienti, HashMap<String, Spedizione> spedizioni) {
 		this.clienti = clienti;
 		this.spedizioni = spedizioni;
 	}
@@ -94,8 +94,13 @@ public class Corriere {
 	}
 	
 	
+	public void salva() {
+		salvaClienti(clienti);
+		salvaSpedizioni(spedizioni);
+	}
 	
-	public void salvaClienti(Map<Integer, Cliente> clienti)  {
+	
+	private void salvaClienti(Map<Integer, Cliente> clienti)  {
 		ObjectOutputStream oos = null;
 		try {
 			// APRO IL FILE IN SCRITTURA
@@ -109,13 +114,13 @@ public class Corriere {
 		}
 	}
 	
-	public void salvaSpedizioni(Map<String, Cliente> spedizioni)  {
+	private void salvaSpedizioni(Map<String, Spedizione> spedizioni2)  {
 		ObjectOutputStream oos = null;
 		try {
 			// APRO IL FILE IN SCRITTURA
 			oos = new ObjectOutputStream(new FileOutputStream("spedizioni.bin"));
 			// SERIALIZZO L'OGGETTO lista di studenti
-			oos.writeObject(spedizioni);
+			oos.writeObject(spedizioni2);
 			oos.close();
 			System.out.println("Dati salvati nel file spedizioni.bin");
 		} catch (IOException e) {
@@ -138,12 +143,12 @@ public class Corriere {
 		return null;
 	}
 	
-	public HashMap<String, Cliente> caricaSpedizioni() {
-		HashMap<String, Cliente> spedizioni;
+	public HashMap<String, Spedizione> caricaSpedizioni() {
+		HashMap<String, Spedizione> spedizioni;
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream("studenti.bin"));
-			spedizioni = (HashMap<String, Cliente>) ois.readObject();
+			spedizioni = (HashMap<String, Spedizione>) ois.readObject();
 			ois.close();
 			System.out.println("Lettura dati dal file studenti.bin");
 			return spedizioni;
