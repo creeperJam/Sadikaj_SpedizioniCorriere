@@ -70,7 +70,13 @@ public class Spedizione implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Spedizione [codice=" + codice + ", descrizione=" + descrizione + ", dataOraConsegna=" + dataOraConsegna
-				+ ", mittente=" + mittente + ", destinatario=" + destinatario + "]";
+		String toString = "";
+		toString += "Spedizione: " + codice;
+		toString += "\n\tdescrizione: " + descrizione;
+		toString += "\n\tData e ora consegna: " + dataOraConsegna;
+		toString += "\n\tMittente: " + mittente.getNome() + " " + mittente.getCognome();
+		toString += "\n\tDestinatario: " + destinatario.getNome() + " " + destinatario.getCognome();
+		
+		return toString;
 	}
 }

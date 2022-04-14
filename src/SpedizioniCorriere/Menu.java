@@ -16,10 +16,11 @@ public class Menu {
 		System.out.print("Cognome: ");
 		String cognome = sc.next();
 		System.out.print("Indirizzo: ");
-		String indirizzo = sc.next();
+		sc.nextLine();
+		String indirizzo = sc.nextLine();
 		System.out.print("Città: ");
-		String citta = sc.next();
-		System.out.print("Numero di telefono: ");
+		String citta = sc.nextLine();
+		System.out.print("Numero di telefono (no spazi): ");
 		String telefono = sc.next();
 
 		return new Cliente(codiceFiscale, nome, cognome, indirizzo, citta, telefono);
@@ -34,40 +35,72 @@ public class Menu {
 		for (int i = 0; i < 10; i++) {
 			codice += chars.charAt(rnd.nextInt(chars.length()));
 		}
-
+		System.out.println("Codice della spedizione: " + codice);
 		System.out.print("Descrizione: ");
-		String descrizione = sc.next();
+		String descrizione = sc.nextLine();
 
 		// Inserimento orario
 		System.out.println("Inserimento data e ora spedizione:");
-		int anno, mese, giorno;
+		int anno = 0, mese = 0, giorno = 0;
+		boolean test = false;
+		
 		do {
-			System.out.print("Anno: ");
-			anno = sc.nextInt();
-			sc.nextLine();
-		} while (anno < 2000 || anno > 2022);
+			try {
+				System.out.print("Anno: ");
+				anno = Integer.parseInt(sc.next());
+			} catch (NumberFormatException e) {
+				System.out.println("Per favore inserire un numero, non lettere o simboli.");
+				test = true;
+			}
+			
+			System.out.println("Anno inserito: " + anno);
+		} while (test || anno < 2000 || anno > 2022);
+		
 		do {
-			System.out.print("Mese: ");
-			mese = sc.nextInt();
-			sc.nextLine();
-		} while (mese < 1 || mese > 12);
+			try {
+				System.out.print("Mese: ");
+				mese = sc.nextInt();
+				sc.nextLine();
+			} catch (InputMismatchException e) {
+				System.out.println("Per favore inserire un numero, non lettere o simboli.");
+				test = true;
+			}
+		} while (test && (mese < 1 || mese > 12));
+		
 		do {
-			System.out.print("Giorno: ");
-			giorno = sc.nextInt();
-			sc.nextLine();
-		} while (giorno < 1 || giorno > 31);
+			try {
+				System.out.print("Giorno: ");
+				giorno = sc.nextInt();
+				sc.nextLine();
+			} catch (InputMismatchException e) {
+				System.out.println("Per favore inserire un numero, non lettere o simboli.");
+				test = true;
+			}
+		} while (test && (giorno < 1 || giorno > 31));
 
-		int ora, minuti;
+		int ora = 0, minuti = 0;
+		
 		do {
-			System.out.print("Ora: ");
-			ora = sc.nextInt();
-			sc.nextLine();
-		} while (ora < 0 || ora > 23);
+			try {
+				System.out.print("Ora: ");
+				ora = sc.nextInt();
+				sc.nextLine();
+			} catch (InputMismatchException e) {
+				System.out.println("Per favore inserire un numero, non lettere o simboli.");
+				test = true;
+			}
+		} while (test && (ora < 0 || ora > 23));
+		
 		do {
-			System.out.print("Minuti: ");
-			minuti = sc.nextInt();
-			sc.nextLine();
-		} while (minuti < 0 || minuti > 59);
+			try {
+				System.out.print("Minuti: ");
+				minuti = sc.nextInt();
+				sc.nextLine();
+			} catch (InputMismatchException e) {
+				System.out.println("Per favore inserire un numero, non lettere o simboli.");
+				test = true;
+			}
+		} while (test && (minuti < 0 || minuti > 59));
 
 		LocalDateTime dataOraConsegna = LocalDateTime.of(anno, mese, giorno, ora, minuti);
 
@@ -86,10 +119,12 @@ public class Menu {
 		do {
 			System.out.println("---------------Menu---------------");
 			System.out.println("| 1) Memorizzazione cliente      |");
-			System.out.println("| 2) Memorizzazione spedizione   |");
-			System.out.println("| 3) Visualizzazione spedizione  |");
-			System.out.println("| 4) Salva clienti e spedizioni  |");
-			System.out.println("| 5) Carica clienti e spedizioni |");
+			System.out.println("| 2) Cancellazione cliente       |");
+			System.out.println("| 3) Memorizzazione spedizione   |");
+			System.out.println("| 4) Annulla spedizione          |");
+			System.out.println("| 5) Visualizzazione spedizioni  |");
+			System.out.println("| 6) Salva clienti e spedizioni  |");
+			System.out.println("| 7) Carica clienti e spedizioni |");
 			System.out.println("| 0) Esci                        |");
 			System.out.println("----------------------------------\n");
 
@@ -97,7 +132,7 @@ public class Menu {
 			try {
 				scelta = sc.nextInt();
 			} catch (InputMismatchException e) {
-				scelta = 6;
+				scelta = -1;
 			}
 
 			sc.nextLine();

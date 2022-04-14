@@ -75,8 +75,14 @@ public class Cliente implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Cliente [codiceFiscale=" + codiceFiscale + ", nome=" + nome + ", cognome=" + cognome + ", indirizzo="
-				+ indirizzo + ", citta=" + citta + ", telefono=" + telefono + "]";
+		String toString = "";
+		toString += "Cliente " + codiceFiscale;
+		toString += "\n\tNome: " + nome;
+		toString += "\n\tCognome: " + cognome;
+		toString += "\n\tIndirizzo: " + indirizzo;
+		toString += "\n\tCitta: " + citta;
+		toString += "\n\tTelefono: " + telefono;
+		return toString;
 	}
 	
 }
