@@ -30,22 +30,22 @@ public class Corriere {
 		this.spedizioni = spedizioni;
 	}
 
-	private boolean controlloMemorizzazione(Cliente c) {
+	private int controlloClienti(String codiceFiscale) {
 		Cliente temp;
 		for (int i = 0; i < clienti.size(); i++) {
 			if (clienti.containsKey(i)) {
 				temp = clienti.get(i);
-				if (temp.getCodiceFiscale().compareToIgnoreCase(c.getCodiceFiscale()) == 0)
-					return true;
+				if (temp.getCodiceFiscale().compareToIgnoreCase(codiceFiscale) == 0)
+					return i;
 			}
 		}
 
-		return false;
+		return -1;
 	}
 
 	public boolean memorizzazioneCliente() {
 		Cliente c = infoCliente();
-		if (!controlloMemorizzazione(c)) {
+		if (controlloClienti(c.getCodiceFiscale()) != -1) {
 			clienti.put(contatore++, c);
 			return true;
 		} else {
@@ -54,9 +54,12 @@ public class Corriere {
 	}
 
 	public boolean rimuoviCliente() {
-		Cliente c = infoCliente();
-		if (true)
-			;
+		String codiceFiscale = in.inputString("Codice fiscale del cliente da cancellare:");
+		int i;
+		if ((i = controlloClienti(codiceFiscale)) != -1) {
+			clienti.remove(i);
+			return true;
+		}
 		return false;
 	}
 
@@ -69,6 +72,18 @@ public class Corriere {
 			return false;
 		}
 	}
+	
+	public boolean rimuoviSpedizione() { 
+		String codice = in.inputString("Inserire codice della spedizione (anche parte iniziale):", 10);
+		Spedizione s;
+		if ((s = ricercaSpedizione(codice)) != null) {
+			spedizioni.remove(s);
+			return true;
+		}
+		return false;
+	}
+	
+	
 
 	public Spedizione ricercaSpedizione(String codice) {
 		Input in = new Input();
@@ -89,18 +104,13 @@ public class Corriere {
 		if (index == 1)
 			codice = trovati[0];
 		else {
-			System.out.println("Ci son più squadre con il prefisso indicato, sceglierne una:");
+			System.out.println("Ci sono più spedizione che iniziano con " + codice + ", scelga una delle seguenti: ");
 			for (int i = 0; i < index; i++) {
 				System.out.println((i + 1) + "°) " + spedizioni.get(trovati[i]));
 			}
 
 			int scelta;
-			do {
-				scelta = in.inputInt("Squadra numero:");
-
-				if (scelta < 1 || scelta > index)
-					System.out.println("Inserire uno dei numeri delle squadre, non fuori dall'intervallo.");
-			} while (scelta < 1 || scelta > index);
+			scelta = in.inputInt("Spedizione numero:", 1, index);
 
 			codice = trovati[scelta - 1];
 		}
@@ -113,7 +123,6 @@ public class Corriere {
 		if ((temp = ricercaSpedizione(codice)) == null) {
 			System.out.println("Nessuna spedizione presente con il codice inserito.");
 		} else {
-			System.out.println("Spedizione: " + temp.getCodice());
 			System.out.println(temp.toString());
 		}
 	}
@@ -151,7 +160,11 @@ public class Corriere {
 		}
 	}
 
-	public TreeMap<Integer, Cliente> caricaClienti() {
+	public void carica(Corriere c) {
+		c = new Corriere(caricaClienti(), caricaSpedizioni());
+	}
+
+	private TreeMap<Integer, Cliente> caricaClienti() {
 		TreeMap<Integer, Cliente> clienti;
 		ObjectInputStream ois = null;
 		try {
@@ -166,7 +179,7 @@ public class Corriere {
 		return null;
 	}
 
-	public HashMap<String, Spedizione> caricaSpedizioni() {
+	private HashMap<String, Spedizione> caricaSpedizioni() {
 		HashMap<String, Spedizione> spedizioni;
 		ObjectInputStream ois = null;
 		try {
@@ -207,7 +220,7 @@ public class Corriere {
 
 	private Cliente estraiCliente(String yn) {
 		int opzione;
-		
+
 		System.out.println("Clienti presenti:");
 		for (int i = 0; i < clienti.size(); i++) {
 			System.out.println((i + 1) + "°) " + clienti.get(i).getNome() + " " + clienti.get(i).getCognome());
@@ -233,10 +246,9 @@ public class Corriere {
 		String descrizione = in.inputString("Descrizione:");
 
 		// Inserimento orario
-		System.out.println("Inserimento data e ora spedizione:");
-		LocalDate dataConsegna = in.inputDate("Data ");
+		LocalDate dataConsegna = in.inputDate("Data spedizione:");
 
-		System.out.println("MITTENTE");
+		System.out.println("\nMITTENTE");
 		Cliente mittente = null;
 		if (clienti.size() > 0) {
 			System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
@@ -259,9 +271,26 @@ public class Corriere {
 			mittente = infoCliente();
 		}
 
+		Cliente destinatario;
+		String yn = "n";
 		System.out.println("\n\nDESTINATARIO");
-		System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
-		Cliente destinatario = infoCliente();
+		if (clienti.size() > 0) {
+			System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
+
+			do {
+				yn = in.inputString(" ");
+				yn = yn.toLowerCase();
+				if (yn.length() > 1)
+					yn = String.valueOf(yn.charAt(0));
+				if (!Pattern.matches("\\p{Lower}", yn))
+					System.out.print("Inserito un carattere diverso da y/n, reinserire: ");
+			} while (!Pattern.matches("\\p{Lower}", yn));
+		}
+
+		if (yn == "y")
+			destinatario = estraiCliente(yn);
+		else
+			destinatario = infoCliente();
 
 		return new Spedizione(codice, descrizione, dataConsegna, mittente, destinatario);
 	}

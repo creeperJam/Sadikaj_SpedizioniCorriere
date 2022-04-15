@@ -191,9 +191,9 @@ public class Input {
 
 	public LocalTime inputTime(String msg) {
 		System.out.println(msg);
-		int h = this.inputInt("Ora : ", 0, 23);
-		int m = this.inputInt("Minuto : ", 0, 59);
-		int sec = this.inputInt("Secondo : ", 0, 59);
+		int h = this.inputInt("Ora: ", 0, 23);
+		int m = this.inputInt("Minuto: ", 0, 59);
+		int sec = this.inputInt("Secondo: ", 0, 59);
 		return LocalTime.of(h, m, sec);
 	}
 

@@ -72,7 +72,7 @@ public class Spedizione implements Serializable {
 	public String toString() {
 		String toString = "";
 		toString += "Spedizione: " + codice;
-		toString += "\n\tdescrizione: " + descrizione;
+		toString += "\n\tDescrizione: " + descrizione;
 		toString += "\n\tData e ora consegna: " + dataConsegna;
 		toString += "\n\tMittente: " + mittente.getNome() + " " + mittente.getCognome();
 		toString += "\n\tDestinatario: " + destinatario.getNome() + " " + destinatario.getCognome();
