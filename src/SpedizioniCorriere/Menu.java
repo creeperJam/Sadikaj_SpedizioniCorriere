@@ -1,16 +1,14 @@
 package SpedizioniCorriere;
 
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
 
-	
-
 	public static void main(String[] args) {
 		Corriere c = new Corriere();
-		Scanner sc = new Scanner(System.in);
+		Input in = new Input();
+
 		int scelta;
 		do {
 			System.out.println("---------------Menu---------------");
@@ -24,14 +22,7 @@ public class Menu {
 			System.out.println("| 0) Esci                        |");
 			System.out.println("----------------------------------\n");
 
-			System.out.print("Scelta: ");
-			try {
-				scelta = sc.nextInt();
-			} catch (InputMismatchException e) {
-				scelta = -1;
-			}
-
-			sc.nextLine();
+			scelta = in.inputInt("Scelta:");
 
 			System.out.println("\n");
 
@@ -46,7 +37,7 @@ public class Menu {
 			}
 
 			case 2: {
-				
+
 				break;
 			}
 
@@ -56,31 +47,28 @@ public class Menu {
 				} else {
 					System.out.println("Errore durante la memorizzazione (cliente gia' presente).");
 				}
-				
+
 				break;
 			}
 
 			case 4: {
-				
+
 				break;
 			}
 
 			case 5: {
-				
-				
-				System.out.print("Codice della spedizione desiderata (anche iniziali): ");
-				String codice = sc.next();
-				
+				String codice = in.inputString("Codice della spedizione desiderata (anche iniziali):");
+
 				c.visualizzazioneSpedizione(codice);
-				
+
 				break;
 			}
-			
+
 			case 6: {
 				c.salva();
-				break;				
+				break;
 			}
-			
+
 			case 7: {
 				c = new Corriere(c.caricaClienti(), c.caricaSpedizioni());
 				break;
@@ -91,12 +79,11 @@ public class Menu {
 			}
 
 			default: {
-				System.out.println("Perfavore, inserire un numero, non lettere o simboli, compreso nell'intervallo del menu.\n\n");
+				System.out.println(
+						"Perfavore, inserire un numero, non lettere o simboli, compreso nell'intervallo del menu.\n\n");
 				break;
 			}
 			} // Fine Switch
 		} while (scelta != 0);
-		
-		sc.close();
 	}
 }

@@ -5,12 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
@@ -19,6 +17,7 @@ public class Corriere {
 	private static int contatore = 0;
 	private Map<Integer, Cliente> clienti;
 	private Map<String, Spedizione> spedizioni;
+	private Input in = new Input();
 
 	public Corriere() {
 		super();
@@ -31,14 +30,34 @@ public class Corriere {
 		this.spedizioni = spedizioni;
 	}
 
+	private boolean controlloMemorizzazione(Cliente c) {
+		Cliente temp;
+		for (int i = 0; i < clienti.size(); i++) {
+			if (clienti.containsKey(i)) {
+				temp = clienti.get(i);
+				if (temp.getCodiceFiscale().compareToIgnoreCase(c.getCodiceFiscale()) == 0)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	public boolean memorizzazioneCliente() {
 		Cliente c = infoCliente();
-		if (!clienti.containsValue(c)) {
+		if (!controlloMemorizzazione(c)) {
 			clienti.put(contatore++, c);
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean rimuoviCliente() {
+		Cliente c = infoCliente();
+		if (true)
+			;
+		return false;
 	}
 
 	public boolean memorizzazioneSpedizione() {
@@ -52,6 +71,8 @@ public class Corriere {
 	}
 
 	public Spedizione ricercaSpedizione(String codice) {
+		Input in = new Input();
+
 		codice = codice.toLowerCase();
 		String trovati[] = new String[spedizioni.size()];
 		String codici[] = spedizioni.keySet().toArray(new String[spedizioni.size()]);
@@ -73,12 +94,10 @@ public class Corriere {
 				System.out.println((i + 1) + "°) " + spedizioni.get(trovati[i]));
 			}
 
-			Scanner sc = new Scanner(System.in);
 			int scelta;
 			do {
-				System.out.print("Squadra numero: ");
-				scelta = sc.nextInt();
-				sc.nextLine();
+				scelta = in.inputInt("Squadra numero:");
+
 				if (scelta < 1 || scelta > index)
 					System.out.println("Inserire uno dei numeri delle squadre, non fuori dall'intervallo.");
 			} while (scelta < 1 || scelta > index);
@@ -136,10 +155,10 @@ public class Corriere {
 		TreeMap<Integer, Cliente> clienti;
 		ObjectInputStream ois = null;
 		try {
-			ois = new ObjectInputStream(new FileInputStream("studenti.bin"));
+			ois = new ObjectInputStream(new FileInputStream("clienti.bin"));
 			clienti = (TreeMap<Integer, Cliente>) ois.readObject();
 			ois.close();
-			System.out.println("Lettura dati dal file studenti.bin");
+			System.out.println("Lettura dati dal file clienti.bin");
 			return clienti;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Errore nella lettura da file");
@@ -151,10 +170,10 @@ public class Corriere {
 		HashMap<String, Spedizione> spedizioni;
 		ObjectInputStream ois = null;
 		try {
-			ois = new ObjectInputStream(new FileInputStream("studenti.bin"));
+			ois = new ObjectInputStream(new FileInputStream("spedizioni.bin"));
 			spedizioni = (HashMap<String, Spedizione>) ois.readObject();
 			ois.close();
-			System.out.println("Lettura dati dal file studenti.bin");
+			System.out.println("Lettura dati dal file spedizioni.bin");
 			return spedizioni;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Errore nella lettura da file");
@@ -162,44 +181,46 @@ public class Corriere {
 		return null;
 	}
 
-	public Cliente infoCliente() {
-		
-		Scanner sc = new Scanner(System.in);
+	private Cliente infoCliente() {
+
+		Input in = new Input();
+
 		String codiceFiscale, nome, cognome, indirizzo, citta, telefono;
 
-		
 		do {
-			System.out.println("Inserire informazioni cliente:");
-			System.out.print("Codice fiscale (Formato ABCDEF12A12B123C: ");
-			codiceFiscale = sc.next();
-			if (Pattern.matches("\\p{Alpha}{6}\\d{2}\\p{Alpha}\\d{2}\\p{Alpha}\\d{3}\\p{Alpha}", codiceFiscale))
+			System.out.println();
+			codiceFiscale = in.inputString(
+					"Inserire informazioni cliente:\nCodice fiscale (Formato AAAAAA-11-A-11-A-111-A, senza trattini):");
+			if (!Pattern.matches("\\p{Alpha}{6}\\d{2}\\p{Alpha}\\d{2}\\p{Alpha}\\d{3}\\p{Alpha}", codiceFiscale))
 				System.out.println("Il codice fiscale inserito non rispetta il formato richiesto.");
-		} while (Pattern.matches("\\p{Alpha}{6}\\d{2}\\p{Alpha}\\d{2}\\p{Alpha}\\d{3}\\p{Alpha}", codiceFiscale));
+		} while (!Pattern.matches("\\p{Alpha}{6}\\d{2}\\p{Alpha}\\d{2}\\p{Alpha}\\d{3}\\p{Alpha}", codiceFiscale));
 
-		System.out.print("Nome: ");
-		nome = sc.next();
-		System.out.print("Cognome: ");
-		cognome = sc.next();
-		System.out.print("Indirizzo: ");
-		sc.nextLine();
-		indirizzo = sc.nextLine();
-		System.out.print("Città: ");
-		citta = sc.nextLine();
+		nome = in.inputString("Nome:");
+		cognome = in.inputString("Cognome:");
+		indirizzo = in.inputString("Indirizzo:");
+		citta = in.inputString("Citta:");
 
-		do {
-			System.out.print("Numero di telefono (lungo 10, no spazi): ");
-			telefono = sc.next();
-			if (telefono.length() != 10)
-				System.out.println("Numero di telefono inserito invalido.");
-		} while (telefono.length() != 10);
+		telefono = in.inputPhoneNumber();
 
 		return new Cliente(codiceFiscale, nome, cognome, indirizzo, citta, telefono);
 	}
 
-	public Spedizione infoSpedizione() {
-		Scanner sc = new Scanner(System.in);
+	private Cliente estraiCliente(String yn) {
+		int opzione;
 		
-		
+		System.out.println("Clienti presenti:");
+		for (int i = 0; i < clienti.size(); i++) {
+			System.out.println((i + 1) + "°) " + clienti.get(i).getNome() + " " + clienti.get(i).getCognome());
+		}
+
+		opzione = in.inputInt("Quale cliente si vuole (numero):", 0, clienti.size() - 1);
+		opzione--;
+
+		return clienti.get(opzione);
+	}
+
+	private Spedizione infoSpedizione() {
+
 		System.out.println("Inserire informazioni spedizione:");
 		String chars = "0123456789abcdefghijklmnopqrstuvwxyz";
 		String codice = "";
@@ -209,110 +230,39 @@ public class Corriere {
 			codice += chars.charAt(rnd.nextInt(chars.length()));
 		}
 		System.out.println("Codice della spedizione: " + codice);
-		System.out.print("Descrizione: ");
-		String descrizione = sc.nextLine();
+		String descrizione = in.inputString("Descrizione:");
 
 		// Inserimento orario
 		System.out.println("Inserimento data e ora spedizione:");
-		int anno = 0, mese = 0, giorno = 0;
-		boolean test = false;
-
-		do {
-			try {
-				System.out.print("Anno: ");
-				anno = Integer.parseInt(sc.next());
-			} catch (NumberFormatException e) {
-				System.out.println("Per favore inserire un numero, non lettere o simboli.");
-				test = true;
-			}
-
-			System.out.println("Anno inserito: " + anno);
-		} while (test || anno < 2000 || anno > 2022);
-
-		do {
-			try {
-				System.out.print("Mese: ");
-				mese = sc.nextInt();
-				sc.nextLine();
-			} catch (InputMismatchException e) {
-				System.out.println("Per favore inserire un numero, non lettere o simboli.");
-				test = true;
-			}
-		} while (test && (mese < 1 || mese > 12));
-
-		do {
-			try {
-				System.out.print("Giorno: ");
-				giorno = sc.nextInt();
-				sc.nextLine();
-			} catch (InputMismatchException e) {
-				System.out.println("Per favore inserire un numero, non lettere o simboli.");
-				test = true;
-			}
-		} while (test && (giorno < 1 || giorno > 31));
-
-		int ora = 0, minuti = 0;
-
-		do {
-			try {
-				System.out.print("Ora: ");
-				ora = sc.nextInt();
-				sc.nextLine();
-			} catch (InputMismatchException e) {
-				System.out.println("Per favore inserire un numero, non lettere o simboli.");
-				test = true;
-			}
-		} while (test && (ora < 0 || ora > 23));
-
-		do {
-			try {
-				System.out.print("Minuti: ");
-				minuti = sc.nextInt();
-				sc.nextLine();
-			} catch (InputMismatchException e) {
-				System.out.println("Per favore inserire un numero, non lettere o simboli.");
-				test = true;
-			}
-		} while (test && (minuti < 0 || minuti > 59));
-
-		LocalDateTime dataOraConsegna = LocalDateTime.of(anno, mese, giorno, ora, minuti);
+		LocalDate dataConsegna = in.inputDate("Data ");
 
 		System.out.println("MITTENTE");
-		System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
-		String scelta = sc.next("\\p{ALPHA}");
-		Cliente mittente;
-		if (scelta.toLowerCase().equals("y")) {
+		Cliente mittente = null;
+		if (clienti.size() > 0) {
+			System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
 
-			System.out.println("Clienti presenti:");
-			for (int i = 0; i < clienti.size(); i++) {
-				System.out.println((i + 1) + "°) " + clienti.get(i).getNome() + " " + clienti.get(i).getCognome());
-			}
-			
-			int opzione = -1;
+			String yn;
 			do {
-				try {
-					System.out.println("Quale cliente si vuole (numero): ");
-					opzione = sc.nextInt();
-					sc.nextLine();
-					opzione--;
-				} catch (InputMismatchException e) {
-					System.out.println("Inserire un numero tra quelli presenti, non fuori dall'intervallo.");
-				}
-			} while (opzione < 0 || opzione > clienti.size() - 1);
-			
-			
-			
-			mittente = clienti.get(opzione);
+				yn = in.inputString(" ");
+				yn = yn.toLowerCase();
+				if (yn.length() > 1)
+					yn = String.valueOf(yn.charAt(0));
+				if (!Pattern.matches("\\p{Lower}", yn))
+					System.out.print("Inserito un carattere diverso da y/n, reinserire: ");
+			} while (!Pattern.matches("\\p{Lower}", yn));
+
+			if (yn == "y")
+				mittente = estraiCliente(yn);
+			else
+				mittente = infoCliente();
 		} else {
 			mittente = infoCliente();
 		}
 
 		System.out.println("\n\nDESTINATARIO");
 		System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
-		String yn = sc.next("\\p{ALPHA}");
-		System.out.println("DESTINATARIO");
 		Cliente destinatario = infoCliente();
 
-		return new Spedizione(codice, descrizione, dataOraConsegna, mittente, destinatario);
+		return new Spedizione(codice, descrizione, dataConsegna, mittente, destinatario);
 	}
 }

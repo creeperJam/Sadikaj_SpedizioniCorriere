@@ -1,7 +1,7 @@
 package SpedizioniCorriere;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Spedizione implements Serializable {
 	
@@ -11,15 +11,15 @@ public class Spedizione implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String codice;
 	private String descrizione;
-	private LocalDateTime dataOraConsegna;
+	private LocalDate dataConsegna;
 	private Cliente mittente;
 	private Cliente destinatario;
 	
 	
-	public Spedizione(String codice, String descrizione, LocalDateTime dataOraConsegna, Cliente m, Cliente d) {
+	public Spedizione(String codice, String descrizione, LocalDate dataConsegna, Cliente m, Cliente d) {
 		this.codice = codice;
 		this.descrizione = descrizione;
-		this.dataOraConsegna = dataOraConsegna;
+		this.dataConsegna = dataConsegna;
 		this.mittente = m;
 		this.destinatario = d;
 	}
@@ -42,12 +42,12 @@ public class Spedizione implements Serializable {
 		this.descrizione = descrizione;
 	}
 
-	public LocalDateTime getDataOraConsegna() {
-		return dataOraConsegna;
+	public LocalDate getDataOraConsegna() {
+		return dataConsegna;
 	}
 
-	public void setDataOraConsegna(LocalDateTime dataOraConsegna) {
-		this.dataOraConsegna = dataOraConsegna;
+	public void setDataOraConsegna(LocalDate dataOraConsegna) {
+		this.dataConsegna = dataOraConsegna;
 	}
 
 	public Cliente getMittente() {
@@ -73,7 +73,7 @@ public class Spedizione implements Serializable {
 		String toString = "";
 		toString += "Spedizione: " + codice;
 		toString += "\n\tdescrizione: " + descrizione;
-		toString += "\n\tData e ora consegna: " + dataOraConsegna;
+		toString += "\n\tData e ora consegna: " + dataConsegna;
 		toString += "\n\tMittente: " + mittente.getNome() + " " + mittente.getCognome();
 		toString += "\n\tDestinatario: " + destinatario.getNome() + " " + destinatario.getCognome();
 		
