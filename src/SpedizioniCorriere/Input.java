@@ -138,7 +138,7 @@ public class Input {
 		do {
 			System.out.print(msg + " ");
 			data = this.input.nextLine();
-			if (!flag && data.isBlank() == true) {
+			if (!flag && data.isBlank()) {
 				System.out.println("Errore, campo vuoto");
 			} else {
 				break;
@@ -152,7 +152,7 @@ public class Input {
 		do {
 			System.out.print(msg + " ");
 			data = this.input.nextLine();
-			if (data.isBlank() == true) {
+			if (data.isBlank()) {
 				System.out.println("Errore, campo vuoto");
 			} else if (data.length() != LenChacacter) {
 				System.out.println("Lunghezza errata, riprovare! (inserire " + LenChacacter + " caratteri)");
@@ -168,10 +168,10 @@ public class Input {
 		do {
 			System.out.print(msg + " ");
 			data = this.input.nextLine();
-			if (data.isBlank() == true) {
+			if (data.isBlank()) {
 				System.out.println("Errore, campo vuoto");
 			} else if (data.length() > maxCharacter) {
-				System.out.println("Lunghezza errata, riprovare! (inserire fino a" + maxCharacter + "caratteri)");
+				System.out.println("Lunghezza errata, riprovare! (inserire fino a " + maxCharacter + " caratteri)");
 			} else {
 				break;
 			}
@@ -182,8 +182,8 @@ public class Input {
 	public LocalDate inputDate(String msg) {
 		System.out.println(msg);
 		int year = this.inputInt("Anno: ", LocalDate.now().getYear());
-		int month = this.inputInt("\nMese: ", 1, 12);
-		int day = this.inputInt("\nGiorno: ", 1,
+		int month = this.inputInt("Mese: ", 1, 12);
+		int day = this.inputInt("Giorno: ", 1,
 				month == 2 ? ((year % 4) == 0) && ((year % 100) == 0) && ((year % 400) != 0) ? 28 : 29
 						: (month % 2) == 0 ? 30 : 31);
 		return LocalDate.of(year, month, day);
@@ -200,7 +200,7 @@ public class Input {
 	public String inputPhoneNumber() {
 		String cell;
 		do {
-			cell = this.inputString("Numero : ");
+			cell = this.inputString("Numero: ");
 			if (!cell.matches("\\d{10}")) {
 				System.out.println("Numero inserito non valido, riprovare!");
 			}

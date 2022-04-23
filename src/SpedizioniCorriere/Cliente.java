@@ -16,13 +16,21 @@ public class Cliente implements Serializable{
 	private String telefono;
 	
 	public Cliente(String codiceFiscale, String nome, String cognome, String indirizzo, String citta, String telefono) {
-		super();
 		this.codiceFiscale = codiceFiscale;
 		this.nome = nome;
 		this.cognome = cognome;
 		this.indirizzo = indirizzo;
 		this.citta = citta;
 		this.telefono = telefono;
+	}
+	
+	public Cliente(Cliente c) {
+		this.codiceFiscale = c.codiceFiscale;
+		this.nome = c.nome;
+		this.cognome = c.cognome;
+		this.indirizzo = c.indirizzo;
+		this.citta = c.citta;
+		this.telefono = c.telefono;
 	}
 	
 	public String getCodiceFiscale() {

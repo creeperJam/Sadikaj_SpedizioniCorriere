@@ -14,8 +14,7 @@ import java.util.regex.Pattern;
 
 public class Corriere {
 
-	private static int contatore = 0;
-	private Map<Integer, Cliente> clienti;
+	private Map<String, Cliente> clienti;
 	private Map<String, Spedizione> spedizioni;
 	private Input in = new Input();
 
@@ -25,65 +24,79 @@ public class Corriere {
 		spedizioni = new HashMap<>();
 	}
 
-	public Corriere(TreeMap<Integer, Cliente> clienti, HashMap<String, Spedizione> spedizioni) {
+	public Corriere(TreeMap<String, Cliente> clienti, HashMap<String, Spedizione> spedizioni) {
 		this.clienti = clienti;
 		this.spedizioni = spedizioni;
 	}
 
-	private int controlloClienti(String codiceFiscale) {
-		Cliente temp;
-		for (int i = 0; i < clienti.size(); i++) {
-			if (clienti.containsKey(i)) {
-				temp = clienti.get(i);
-				if (temp.getCodiceFiscale().compareToIgnoreCase(codiceFiscale) == 0)
-					return i;
-			}
-		}
-
-		return -1;
-	}
-
 	public boolean memorizzazioneCliente() {
 		Cliente c = infoCliente();
-		if (controlloClienti(c.getCodiceFiscale()) != -1) {
-			clienti.put(contatore++, c);
+
+		if (!clienti.containsKey(c.getCodiceFiscale())) {
+			clienti.put(c.getCodiceFiscale(), new Cliente(c));
 			return true;
-		} else {
-			return false;
 		}
+
+		return false;
+
 	}
 
 	public boolean rimuoviCliente() {
-		String codiceFiscale = in.inputString("Codice fiscale del cliente da cancellare:");
-		int i;
-		if ((i = controlloClienti(codiceFiscale)) != -1) {
-			clienti.remove(i);
+		String codiceFiscale = in.inputString("Codice fiscale del cliente da cancellare:", 16);
+
+		if (clienti.containsKey(codiceFiscale)) {
+			clienti.remove(codiceFiscale);
 			return true;
 		}
+		return false;
+	}
+
+	public boolean stampaClienti() {
+		if (clienti.isEmpty())
+			return false;
+
+		String appoggio[] = clienti.keySet().toArray(new String[clienti.size()]);
+
+		for (int i = 0; i < appoggio.length; i++) {
+			System.out
+					.println("Cliente " + (i + 1) + "°: " + clienti.get(appoggio[appoggio.length - i - 1]).toString());
+		}
+
+		return true;
+	}
+
+	public boolean controlloCodiceSpedizione(String codice) {
+		String codici[] = spedizioni.keySet().toArray(new String[spedizioni.size()]);
+
+		for (int i = 0; i < codici.length; i++) {
+			if (codici[i].compareTo(codice) == 0)
+				return true;
+		}
+
 		return false;
 	}
 
 	public boolean memorizzazioneSpedizione() {
 		Spedizione s = infoSpedizione();
 		if (!spedizioni.containsValue(s)) {
-			spedizioni.put(s.getCodice(), s);
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public boolean rimuoviSpedizione() { 
-		String codice = in.inputString("Inserire codice della spedizione (anche parte iniziale):", 10);
-		Spedizione s;
-		if ((s = ricercaSpedizione(codice)) != null) {
-			spedizioni.remove(s);
+			spedizioni.put(s.getCodice(), new Spedizione(s));
 			return true;
 		}
+
 		return false;
 	}
-	
-	
+
+	public boolean rimuoviSpedizione() {
+		String codice = in.inputStringMaxLen("Inserire codice della spedizione (anche parte iniziale):", 10);
+		Spedizione s = ricercaSpedizione(codice);
+
+		if (s == null) {
+			return false;
+		}
+
+		spedizioni.remove(s.getCodice());
+		return true;
+	}
 
 	public Spedizione ricercaSpedizione(String codice) {
 		Input in = new Input();
@@ -132,7 +145,7 @@ public class Corriere {
 		salvaSpedizioni(spedizioni);
 	}
 
-	private void salvaClienti(Map<Integer, Cliente> clienti) {
+	private void salvaClienti(Map<String, Cliente> clienti) {
 		ObjectOutputStream oos = null;
 		try {
 			// APRO IL FILE IN SCRITTURA
@@ -160,16 +173,12 @@ public class Corriere {
 		}
 	}
 
-	public void carica(Corriere c) {
-		c = new Corriere(caricaClienti(), caricaSpedizioni());
-	}
-
-	private TreeMap<Integer, Cliente> caricaClienti() {
-		TreeMap<Integer, Cliente> clienti;
+	public TreeMap<String, Cliente> caricaClienti() {
+		TreeMap<String, Cliente> clienti;
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(new FileInputStream("clienti.bin"));
-			clienti = (TreeMap<Integer, Cliente>) ois.readObject();
+			clienti = (TreeMap<String, Cliente>) ois.readObject();
 			ois.close();
 			System.out.println("Lettura dati dal file clienti.bin");
 			return clienti;
@@ -179,7 +188,7 @@ public class Corriere {
 		return null;
 	}
 
-	private HashMap<String, Spedizione> caricaSpedizioni() {
+	public HashMap<String, Spedizione> caricaSpedizioni() {
 		HashMap<String, Spedizione> spedizioni;
 		ObjectInputStream ois = null;
 		try {
@@ -212,24 +221,24 @@ public class Corriere {
 		cognome = in.inputString("Cognome:");
 		indirizzo = in.inputString("Indirizzo:");
 		citta = in.inputString("Citta:");
-
 		telefono = in.inputPhoneNumber();
 
 		return new Cliente(codiceFiscale, nome, cognome, indirizzo, citta, telefono);
 	}
 
-	private Cliente estraiCliente(String yn) {
+	private Cliente estraiCliente() {
 		int opzione;
+		String chiavi[] = clienti.keySet().toArray(new String[clienti.size()]);
 
 		System.out.println("Clienti presenti:");
-		for (int i = 0; i < clienti.size(); i++) {
-			System.out.println((i + 1) + "°) " + clienti.get(i).getNome() + " " + clienti.get(i).getCognome());
+		for (int i = 0; i < chiavi.length; i++) {
+			System.out.println(
+					(i + 1) + "°) " + clienti.get(chiavi[i]).getNome() + " " + clienti.get(chiavi[i]).getCognome());
 		}
 
-		opzione = in.inputInt("Quale cliente si vuole (numero):", 0, clienti.size() - 1);
-		opzione--;
+		opzione = in.inputInt("Quale cliente si vuole (numero):", 1, clienti.size()) - 1;
 
-		return clienti.get(opzione);
+		return clienti.get(chiavi[opzione]);
 	}
 
 	private Spedizione infoSpedizione() {
@@ -250,25 +259,35 @@ public class Corriere {
 
 		System.out.println("\nMITTENTE");
 		Cliente mittente = null;
-		if (clienti.size() > 0) {
-			System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
 
+		if (clienti.size() > 0) {
 			String yn;
 			do {
-				yn = in.inputString(" ");
-				yn = yn.toLowerCase();
-				if (yn.length() > 1)
-					yn = String.valueOf(yn.charAt(0));
-				if (!Pattern.matches("\\p{Lower}", yn))
-					System.out.print("Inserito un carattere diverso da y/n, reinserire: ");
-			} while (!Pattern.matches("\\p{Lower}", yn));
+				yn = in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase();
+				System.out.println("Stringa inserita: " + yn);
+				if (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0)
+					System.out.println("Risposta non valida.");
+			} while (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0);
 
 			if (yn == "y")
-				mittente = estraiCliente(yn);
+				mittente = estraiCliente();
 			else
 				mittente = infoCliente();
 		} else {
 			mittente = infoCliente();
+		}
+
+		if (!clienti.containsKey(mittente.getCodiceFiscale())) {
+			String yn;
+			do {
+				yn = in.inputString("Si vuole memorizzare il mittente tra i clienti? (yes/no)").toLowerCase();
+				System.out.println("Stringa inserita: " + yn);
+				if (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0)
+					System.out.println("Risposta non valida.");
+			} while (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0);
+
+			if (yn == "y")
+				clienti.put(mittente.getCodiceFiscale(), mittente);
 		}
 
 		Cliente destinatario;
@@ -288,7 +307,7 @@ public class Corriere {
 		}
 
 		if (yn == "y")
-			destinatario = estraiCliente(yn);
+			destinatario = estraiCliente();
 		else
 			destinatario = infoCliente();
 

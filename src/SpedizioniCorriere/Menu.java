@@ -14,8 +14,9 @@ public class Menu {
 			System.out.println("| 3) Memorizzazione spedizione   |");
 			System.out.println("| 4) Annulla spedizione          |");
 			System.out.println("| 5) Visualizzazione spedizioni  |");
-			System.out.println("| 6) Salva clienti e spedizioni  |");
-			System.out.println("| 7) Carica clienti e spedizioni |");
+			System.out.println("| 6) Visualizzazione clienti     |");
+			System.out.println("| 7) Salva clienti e spedizioni  |");
+			System.out.println("| 8) Carica clienti e spedizioni |");
 			System.out.println("| 0) Esci                        |");
 			System.out.println("----------------------------------\n");
 
@@ -68,14 +69,24 @@ public class Menu {
 
 				break;
 			}
-
+			
 			case 6: {
-				c.salva();
+				if (c.stampaClienti()) {
+					
+				} else {
+					System.out.println("Nessun cliente presente nel sistema, inserirne almeno uno prima di stampare.");
+				}
+				
 				break;
 			}
 
 			case 7: {
-				c.carica(c);
+				c.salva();
+				break;
+			}
+
+			case 8: {
+				c = new Corriere(c.caricaClienti(), c.caricaSpedizioni());
 				break;
 			}
 

@@ -24,7 +24,13 @@ public class Spedizione implements Serializable {
 		this.destinatario = d;
 	}
 
-
+	public Spedizione(Spedizione s) {
+		this.codice = s.codice;
+		this.descrizione = s.descrizione;
+		this.dataConsegna = s.dataConsegna;
+		this.mittente = s.mittente;
+		this.destinatario = s.destinatario;
+	}
 
 	public String getCodice() {
 		return codice;
