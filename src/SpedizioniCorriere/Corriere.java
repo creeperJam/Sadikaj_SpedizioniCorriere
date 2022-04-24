@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
-import java.time.format.DateTimeFormatter;
+
 
 public class Corriere {
 
@@ -124,9 +124,9 @@ public class Corriere {
 		if (index == 1)
 			codice = trovati[0];
 		else {
-			System.out.println("Ci sono più spedizione che iniziano con " + codice + ", scelga una delle seguenti: ");
+			System.out.println("Ci sono piÃ¹ spedizione che iniziano con " + codice + ", scelga una delle seguenti: ");
 			for (int i = 0; i < index; i++) {
-				System.out.println((i + 1) + "°) " + spedizioni.get(trovati[i]));
+				System.out.println((i + 1) + "Â°) " + spedizioni.get(trovati[i]));
 			}
 
 			int scelta;
@@ -259,9 +259,9 @@ public class Corriere {
 		System.out.println("Clienti presenti:");
 		for (int i = 0; i < chiavi.length; i++) {
 			System.out.println(
-					(i + 1) + "°) " + clienti.get(chiavi[i]).getNome() + " " + clienti.get(chiavi[i]).getCognome());
+					(i + 1) + "Â°) " + clienti.get(chiavi[i]).getNome() + " " + clienti.get(chiavi[i]).getCognome());
 		}
-		System.out.println((chiavi.length + 1) + "°) Esci");
+		System.out.println((chiavi.length + 1) + "Â°) Esci");
 
 		opzione = in.inputInt("Quale cliente si vuole (numero):", 1, clienti.size() + 1);
 
@@ -287,7 +287,7 @@ public class Corriere {
 				cliente = estraiCliente();
 
 			if (cliente == null || yn.compareTo("n") == 0) {
-				System.out.println("Si è deciso di non usare un cliente presente nel sistema.");
+				System.out.println("Si Ã¨ deciso di non usare un cliente presente nel sistema.");
 				cliente = infoCliente();
 			}
 		} else {
