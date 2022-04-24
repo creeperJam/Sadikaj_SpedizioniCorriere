@@ -45,7 +45,7 @@ public class Menu {
 
 			case 3: {
 				if (c.memorizzazioneSpedizione()) {
-					System.out.println("Cliente memorizzato con successo.");
+					System.out.println("Spedizione memorizzata con successo.");
 				} else {
 					System.out.println("Errore durante la memorizzazione (cliente gia' presente).");
 				}
@@ -57,26 +57,45 @@ public class Menu {
 				if (c.rimuoviSpedizione()) {
 					System.out.println("Spedizione rimossa con successo dal sistema.");
 				} else {
-					System.out.println("Errore durante la rimozione della spedizione dal sistema (spedizione non presente).");
+					System.out.println(
+							"Errore durante la rimozione della spedizione dal sistema (spedizione non presente).");
 				}
 				break;
 			}
 
 			case 5: {
-				String codice = in.inputString("Codice della spedizione desiderata (anche iniziali):");
 
-				c.visualizzazioneSpedizione(codice);
+				System.out.println("------Opzioni------");
+				System.out.println("| 1) Con codice   |");
+				System.out.println("| 2) Tutte        |");
+				System.out.println("-------------------\n");
+
+				int opzione = in.inputInt("Scelta:");
+
+				switch (opzione) {
+				case 1: {
+					String codice = in.inputString("Codice della spedizione desiderata (anche iniziali):");
+
+					c.visualizzazioneSpedizione(codice);
+					break;
+				}
+
+				case 2: {
+
+					break;
+				}
+				} //  Fine switch 2
 
 				break;
-			}
-			
+			} // Fine case 5 - switch 1
+
 			case 6: {
 				if (c.stampaClienti()) {
-					
+
 				} else {
 					System.out.println("Nessun cliente presente nel sistema, inserirne almeno uno prima di stampare.");
 				}
-				
+
 				break;
 			}
 

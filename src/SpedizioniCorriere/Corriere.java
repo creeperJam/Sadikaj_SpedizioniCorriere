@@ -139,6 +139,20 @@ public class Corriere {
 			System.out.println(temp.toString());
 		}
 	}
+	
+	public void visualizzaSpedizioni() {
+		if (!spedizioni.isEmpty()) {
+			String appoggio[] = spedizioni.keySet().toArray(new String[spedizioni.size()]);
+			
+			System.out.println("-----------------------------------------------------------------");
+			for (int i = 0; i < appoggio.length; i++) {
+				System.out.println("| ");
+			}
+		} else {
+			System.out.println("Nessuna spedizione presente da stampare");
+		}
+		
+	}
 
 	public void salva() {
 		salvaClienti(clienti);
@@ -219,8 +233,8 @@ public class Corriere {
 
 		nome = in.inputString("Nome:");
 		cognome = in.inputString("Cognome:");
-		indirizzo = in.inputString("Indirizzo:");
 		citta = in.inputString("Citta:");
+		indirizzo = in.inputString("Indirizzo:");
 		telefono = in.inputPhoneNumber();
 
 		return new Cliente(codiceFiscale, nome, cognome, indirizzo, citta, telefono);
@@ -263,13 +277,13 @@ public class Corriere {
 		if (clienti.size() > 0) {
 			String yn;
 			do {
-				yn = in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase();
-				System.out.println("Stringa inserita: " + yn);
-				if (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0)
-					System.out.println("Risposta non valida.");
-			} while (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0);
+				yn = String.valueOf(in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase().charAt(0));
 
-			if (yn == "y")
+				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
+					System.out.println("Risposta non valida.");
+			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
+
+			if (yn.compareTo("y") == 0)
 				mittente = estraiCliente();
 			else
 				mittente = infoCliente();
@@ -280,37 +294,44 @@ public class Corriere {
 		if (!clienti.containsKey(mittente.getCodiceFiscale())) {
 			String yn;
 			do {
-				yn = in.inputString("Si vuole memorizzare il mittente tra i clienti? (yes/no)").toLowerCase();
-				System.out.println("Stringa inserita: " + yn);
-				if (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0)
+				yn = String.valueOf(in.inputString("Si vuole memorizzare il mittente tra i clienti? (yes/no)").toLowerCase().charAt(0));
+				
+				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
 					System.out.println("Risposta non valida.");
-			} while (String.valueOf(yn.charAt(0)).compareTo("y") == 0 || String.valueOf(yn.charAt(0)).compareTo("n") == 0);
+			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
 
 			if (yn == "y")
+			{
 				clienti.put(mittente.getCodiceFiscale(), mittente);
+				System.out.println("Ciao mondo: " + clienti.get(mittente.getCodiceFiscale()).toString());
+			}
+				
 		}
 
-		Cliente destinatario;
-		String yn = "n";
+		Cliente destinatario = null;
 		System.out.println("\n\nDESTINATARIO");
 		if (clienti.size() > 0) {
-			System.out.println("Si vuole usare un cliente già presente nel sistema? (y/n)");
-
+			String yn;
 			do {
-				yn = in.inputString(" ");
-				yn = yn.toLowerCase();
-				if (yn.length() > 1)
-					yn = String.valueOf(yn.charAt(0));
-				if (!Pattern.matches("\\p{Lower}", yn))
-					System.out.print("Inserito un carattere diverso da y/n, reinserire: ");
-			} while (!Pattern.matches("\\p{Lower}", yn));
-		}
+				yn = in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase();
 
-		if (yn == "y")
-			destinatario = estraiCliente();
-		else
+				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
+					System.out.println("Risposta non valida.");
+			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
+
+			if (yn.compareTo("y") == 0) {
+				do {
+					destinatario = estraiCliente();
+					if (mittente.equals(destinatario)) System.out.println("Il mittente non può essere anche destinatario.");
+				} while (mittente.equals(destinatario));
+			}
+				
+			else
+				destinatario = infoCliente();
+		} else {
 			destinatario = infoCliente();
-
+		}
+		
 		return new Spedizione(codice, descrizione, dataConsegna, mittente, destinatario);
 	}
 }
