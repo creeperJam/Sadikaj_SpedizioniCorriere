@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 public class Spedizione implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -12,10 +12,9 @@ public class Spedizione implements Serializable {
 	private String codice;
 	private String descrizione;
 	private LocalDate dataConsegna;
-	private Cliente mittente;
+	protected Cliente mittente;
 	private Cliente destinatario;
-	
-	
+
 	public Spedizione(String codice, String descrizione, LocalDate dataConsegna, Cliente m, Cliente d) {
 		this.codice = codice;
 		this.descrizione = descrizione;
@@ -48,11 +47,11 @@ public class Spedizione implements Serializable {
 		this.descrizione = descrizione;
 	}
 
-	public LocalDate getDataOraConsegna() {
+	public LocalDate getDataConsegna() {
 		return dataConsegna;
 	}
 
-	public void setDataOraConsegna(LocalDate dataOraConsegna) {
+	public void setDataConsegna(LocalDate dataOraConsegna) {
 		this.dataConsegna = dataOraConsegna;
 	}
 
@@ -72,17 +71,15 @@ public class Spedizione implements Serializable {
 		this.destinatario = destinatario;
 	}
 
-
-
-	@Override
-	public String toString() {
-		String toString = "";
-		toString += "Spedizione: " + codice;
-		toString += "\n\tDescrizione: " + descrizione;
-		toString += "\n\tData e ora consegna: " + dataConsegna;
-		toString += "\n\tMittente: " + mittente.getNome() + " " + mittente.getCognome();
-		toString += "\n\tDestinatario: " + destinatario.getNome() + " " + destinatario.getCognome();
+	public String toStringFormattato() {
+		String descrizione;
+		if (this.descrizione.length() > 15) {
+			descrizione = this.descrizione.substring(0, 15) + "...";
+		} else {
+			descrizione = this.descrizione;
+		}
 		
-		return toString;
+		return String.format("| %-11s | %-18s | %-15s | %-20s -> %-20s |", codice, descrizione, dataConsegna,
+				mittente.getNome() + " " + mittente.getCognome(), destinatario.getNome() + " " + destinatario.getCognome());
 	}
 }

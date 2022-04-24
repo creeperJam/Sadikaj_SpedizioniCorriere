@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
+import java.time.format.DateTimeFormatter;
 
 public class Corriere {
 
@@ -42,6 +43,8 @@ public class Corriere {
 	}
 
 	public boolean rimuoviCliente() {
+		if (clienti.isEmpty()) return false;
+		
 		String codiceFiscale = in.inputString("Codice fiscale del cliente da cancellare:", 16);
 
 		if (clienti.containsKey(codiceFiscale)) {
@@ -56,11 +59,12 @@ public class Corriere {
 			return false;
 
 		String appoggio[] = clienti.keySet().toArray(new String[clienti.size()]);
-
+		System.out.println("------------------------------------------------Clienti------------------------------------------------");
+		System.out.printf("| %-16s | %-10s %-13s | %-12s | %-25s | %-10s |\n", "Codice fiscale", "Nome", "Cognome", "Citta", "Indirizzo", "Telefono");
 		for (int i = 0; i < appoggio.length; i++) {
-			System.out
-					.println("Cliente " + (i + 1) + "°: " + clienti.get(appoggio[appoggio.length - i - 1]).toString());
+			System.out.println(clienti.get(appoggio[appoggio.length - i - 1]).toString());
 		}
+		System.out.println("-------------------------------------------------------------------------------------------------------");
 
 		return true;
 	}
@@ -87,6 +91,8 @@ public class Corriere {
 	}
 
 	public boolean rimuoviSpedizione() {
+		if (spedizioni.isEmpty()) return false;
+		
 		String codice = in.inputStringMaxLen("Inserire codice della spedizione (anche parte iniziale):", 10);
 		Spedizione s = ricercaSpedizione(codice);
 
@@ -114,6 +120,7 @@ public class Corriere {
 
 		if (index == 0)
 			return null;
+
 		if (index == 1)
 			codice = trovati[0];
 		else {
@@ -139,19 +146,24 @@ public class Corriere {
 			System.out.println(temp.toString());
 		}
 	}
-	
+
 	public void visualizzaSpedizioni() {
 		if (!spedizioni.isEmpty()) {
 			String appoggio[] = spedizioni.keySet().toArray(new String[spedizioni.size()]);
-			
-			System.out.println("-----------------------------------------------------------------");
+			System.out.println(
+					"-----------------------------------------Spedizioni--------------------------------------------------");
+			System.out.printf("| %-11s | %-18s | %-15s | %-20s -> %-20s |\n", "Codice", "Descrizione", "Data consegna",
+					"Mittente", "Destinatario");
 			for (int i = 0; i < appoggio.length; i++) {
-				System.out.println("| ");
+				System.out.println(spedizioni.get(appoggio[appoggio.length - i - 1]).toStringFormattato());
 			}
+			System.out.println(
+					"-----------------------------------------------------------------------------------------------------");
+
 		} else {
 			System.out.println("Nessuna spedizione presente da stampare");
 		}
-		
+
 	}
 
 	public void salva() {
@@ -249,10 +261,40 @@ public class Corriere {
 			System.out.println(
 					(i + 1) + "°) " + clienti.get(chiavi[i]).getNome() + " " + clienti.get(chiavi[i]).getCognome());
 		}
+		System.out.println((chiavi.length + 1) + "°) Esci");
 
-		opzione = in.inputInt("Quale cliente si vuole (numero):", 1, clienti.size()) - 1;
+		opzione = in.inputInt("Quale cliente si vuole (numero):", 1, clienti.size() + 1);
+
+		if (opzione == chiavi.length + 1)
+			return null;
 
 		return clienti.get(chiavi[opzione]);
+	}
+
+	private Cliente usoClientePresente() {
+		Cliente cliente = null;
+		if (!clienti.isEmpty()) {
+			String yn;
+			do {
+				yn = String.valueOf(in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)")
+						.toLowerCase().charAt(0));
+
+				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
+					System.out.println("Risposta non valida.");
+			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
+
+			if (yn.compareTo("y") == 0)
+				cliente = estraiCliente();
+
+			if (cliente == null || yn.compareTo("n") == 0) {
+				System.out.println("Si è deciso di non usare un cliente presente nel sistema.");
+				cliente = infoCliente();
+			}
+		} else {
+			cliente = infoCliente();
+		}
+
+		return cliente;
 	}
 
 	private Spedizione infoSpedizione() {
@@ -267,71 +309,34 @@ public class Corriere {
 		}
 		System.out.println("Codice della spedizione: " + codice);
 		String descrizione = in.inputString("Descrizione:");
-
-		// Inserimento orario
 		LocalDate dataConsegna = in.inputDate("Data spedizione:");
 
 		System.out.println("\nMITTENTE");
-		Cliente mittente = null;
+		Cliente mittente;
 
-		if (clienti.size() > 0) {
-			String yn;
-			do {
-				yn = String.valueOf(in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase().charAt(0));
-
-				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
-					System.out.println("Risposta non valida.");
-			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
-
-			if (yn.compareTo("y") == 0)
-				mittente = estraiCliente();
-			else
-				mittente = infoCliente();
-		} else {
-			mittente = infoCliente();
-		}
+		mittente = usoClientePresente();
 
 		if (!clienti.containsKey(mittente.getCodiceFiscale())) {
 			String yn;
 			do {
-				yn = String.valueOf(in.inputString("Si vuole memorizzare il mittente tra i clienti? (yes/no)").toLowerCase().charAt(0));
-				
-				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
-					System.out.println("Risposta non valida.");
-			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
-
-			if (yn == "y")
-			{
-				clienti.put(mittente.getCodiceFiscale(), mittente);
-				System.out.println("Ciao mondo: " + clienti.get(mittente.getCodiceFiscale()).toString());
-			}
-				
-		}
-
-		Cliente destinatario = null;
-		System.out.println("\n\nDESTINATARIO");
-		if (clienti.size() > 0) {
-			String yn;
-			do {
-				yn = in.inputString("Si vuole usare un cliente presente nel sistema? (yes/no)").toLowerCase();
+				yn = String.valueOf(in.inputString("Si vuole memorizzare il mittente tra i clienti? (yes/no)")
+						.toLowerCase().charAt(0));
 
 				if (yn.compareTo("y") != 0 && yn.compareTo("n") != 0)
 					System.out.println("Risposta non valida.");
 			} while (yn.compareTo("y") != 0 && yn.compareTo("n") != 0);
 
 			if (yn.compareTo("y") == 0) {
-				do {
-					destinatario = estraiCliente();
-					if (mittente.equals(destinatario)) System.out.println("Il mittente non può essere anche destinatario.");
-				} while (mittente.equals(destinatario));
+				clienti.put(mittente.getCodiceFiscale(), mittente);
 			}
-				
-			else
-				destinatario = infoCliente();
-		} else {
-			destinatario = infoCliente();
+
 		}
-		
+
+		Cliente destinatario;
+		System.out.println("\n\nDESTINATARIO");
+
+		destinatario = usoClientePresente();
+
 		return new Spedizione(codice, descrizione, dataConsegna, mittente, destinatario);
 	}
 }

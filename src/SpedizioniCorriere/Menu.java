@@ -47,7 +47,7 @@ public class Menu {
 				if (c.memorizzazioneSpedizione()) {
 					System.out.println("Spedizione memorizzata con successo.");
 				} else {
-					System.out.println("Errore durante la memorizzazione (cliente gia' presente).");
+					System.out.println("Errore durante la memorizzazione (spedizione gia' presente).");
 				}
 
 				break;
@@ -65,12 +65,13 @@ public class Menu {
 
 			case 5: {
 
-				System.out.println("------Opzioni------");
-				System.out.println("| 1) Con codice   |");
-				System.out.println("| 2) Tutte        |");
-				System.out.println("-------------------\n");
+				System.out.println("-------Opzioni-------");
+				System.out.println("| 1) Con codice     |");
+				System.out.println("| 2) Tutte          |");
+				System.out.println("| 3) Torna indietro |");
+				System.out.println("---------------------\n");
 
-				int opzione = in.inputInt("Scelta:");
+				int opzione = in.inputInt("Scelta:", 1, 3);
 
 				switch (opzione) {
 				case 1: {
@@ -81,19 +82,37 @@ public class Menu {
 				}
 
 				case 2: {
-
+					c.visualizzaSpedizioni();
 					break;
 				}
-				} //  Fine switch 2
+				} // Fine switch 2
 
 				break;
 			} // Fine case 5 - switch 1
 
 			case 6: {
-				if (c.stampaClienti()) {
 
-				} else {
-					System.out.println("Nessun cliente presente nel sistema, inserirne almeno uno prima di stampare.");
+				System.out.println("-------Opzioni-------");
+				System.out.println("| 1) Con codice     |");
+				System.out.println("| 2) Tutte          |");
+				System.out.println("| 3) Torna indietro |");
+				System.out.println("---------------------\n");
+
+				int opzione = in.inputInt("Scelta:", 1, 3);
+
+				switch (opzione) {
+				case 1: {
+					System.out.print("Codice fiscale del cliente desiderato: ");
+					break;
+				}
+
+				case 2: {
+					if (!c.stampaClienti()) {
+						System.out.println(
+								"Nessun cliente presente nel sistema, inserirne almeno uno prima di stampare.");
+					}
+					break;
+				}
 				}
 
 				break;
@@ -115,10 +134,11 @@ public class Menu {
 
 			default: {
 				System.out.println(
-						"Perfavore, inserire un numero, non lettere o simboli, compreso nell'intervallo del menu.\n\n");
+						"Perfavore, inserire un numero, non lettere o simboli, compreso nell'intervallo del menu.");
 				break;
 			}
 			} // Fine Switch
-		} while (scelta != 0);
-	}
-}
+
+			System.out.println("\n");
+		}while(scelta!=0);
+}}
